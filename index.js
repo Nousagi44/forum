@@ -1,12 +1,9 @@
-// index.js
-
 const express = require('express');
 const mysql = require('mysql');
 const bcrypt = require('bcrypt');
 const session = require('express-session');
 const app = express();
-const port = 3000;
-
+const port = 8000;
 
 const connection = mysql.createConnection({
     host: 'localhost',
@@ -15,8 +12,6 @@ const connection = mysql.createConnection({
     database: 'forum_db',
     insecureAuth: true,
 });
-
-
 
 app.use(express.urlencoded({ extended: true }));
 app.set('view engine', 'ejs');
@@ -35,41 +30,133 @@ const checkLoggedIn = (req, res, next) => {
     }
 };
 
-// Navigation links
 const navLinks = [
     { path: '/', text: 'Home' },
     { path: '/about', text: 'About' },
     { path: '/posts', text: 'Posts' },
-    { path: '/add-post', text: 'Add Post', loggedIn: true }, // Only show if logged in
-    { path: '/register', text: 'Register', loggedOut: true }, // Only show if logged out
-    { path: '/login', text: 'Login', loggedOut: true }, // Only show if logged out
-    { path: '/logout', text: 'Logout', loggedIn: true } // Only show if logged in
+    { path: '/add-post', text: 'Add Post', loggedIn: true },
+    { path: '/register', text: 'Register', loggedOut: true },
+    { path: '/login', text: 'Login', loggedOut: true },
+    { path: '/logout', text: 'Logout', loggedIn: true }
 ];
 
 app.use((req, res, next) => {
     res.locals.navLinks = navLinks.map(link => ({ ...link, active: req.path === link.path }));
     res.locals.user = req.session.user;
+    res.locals.userId = req.session.userId;
     next();
 });
 
 app.get('/', (req, res) => {
-    res.render('index');
+    if (req.session.userId) {
+        connection.query(
+            'SELECT posts.*, users.username, topics.topic_name AS topic_title ' +
+            'FROM posts ' +
+            'JOIN users ON posts.user_id = users.user_id ' +
+            'JOIN topics ON posts.topic_id = topics.topic_id ' +
+            'WHERE posts.user_id = ? ' +
+            'ORDER BY posts.created_at DESC ' +
+            'LIMIT 1',
+            [req.session.userId],
+            (error, results) => {
+                if (error) throw error;
+                res.render('index', { userPost: results[0] });
+            }
+        );
+    } else {
+        // If the user is not logged in, pass an empty object to userPost
+        res.render('index', { userPost: {} });
+    }
 });
 
-app.get('/about', (req, res) => {
-    res.render('about');
-});
 
-app.get('/posts', checkLoggedIn, (req, res) => {
-    connection.query('SELECT posts.*, users.username FROM posts JOIN users ON posts.user_id = users.user_id', (error, results) => {
-        if (error) throw error;
-        res.render('posts', { posts: results });
+app.get('/add-post', checkLoggedIn, (req, res) => {
+    connection.query('SELECT * FROM topics', (error, topics) => {
+        if (error) {
+            console.error('Error getting topics:', error);
+            return res.status(500).send('Internal Server Error');
+        }
+
+        // Render the add-post template with the topics array
+        res.render('add-post', { topics });
     });
 });
 
+
+app.post('/add-post', checkLoggedIn, (req, res) => {
+    const { text, topicId } = req.body;
+    const userId = req.session.userId;
+
+    console.log('Received post request:', { userId, text, topicId });
+
+    if (!userId || !text || !topicId) {
+        console.error('Invalid post data. Missing required fields.');
+        return res.status(400).send('Invalid post data. Missing required fields.');
+    }
+
+    connection.query(
+        'INSERT INTO posts (user_id, text, topic_id) VALUES (?, ?, ?)',
+        [userId, text, topicId],
+        (error, results) => {
+            if (error) {
+                console.error('Error inserting post:', error);
+                return res.status(500).send('Internal Server Error');
+            }
+            console.log('Post inserted successfully:', results);
+
+            res.redirect('/posts');
+        }
+    );
+});
+
+
+app.get('/profile', checkLoggedIn, (req, res) => {
+    res.render('profile', { user: { username: req.session.user, userId: req.session.userId } });
+});
+app.get('/posts', checkLoggedIn, (req, res) => {
+    connection.query(
+        'SELECT posts.*, users.username, topics.topic_name AS topic_title ' +
+        'FROM posts ' +
+        'JOIN users ON posts.user_id = users.user_id ' +
+        'JOIN topics ON posts.topic_id = topics.topic_id ' +
+        'ORDER BY posts.created_at DESC',
+        async (error, results) => {
+            if (error) {
+                console.error(error);
+                throw error;
+            }
+
+            console.log(results);
+
+            res.render('posts', { posts: results });
+        }
+    );
+});
+
+
+app.get('/clear-posts', (req, res) => {
+    res.render('clear-posts'); 
+});
+
+
+app.post('/clear-posts', (req, res) => {
+    connection.query('DELETE FROM posts', (error, results) => {
+        if (error) {
+            console.error('Error clearing posts:', error);
+            res.status(500).send('Internal Server Error');
+        } else {
+            console.log('All posts cleared successfully.');
+            res.redirect('/posts');
+        }
+    });
+});
+app.get('/about', (req, res) => {
+    res.render('about');
+});
 app.get('/register', (req, res) => {
     res.render('register');
-});
+  });
+  
 
 app.post('/register', (req, res) => {
     const { username, password } = req.body;
@@ -128,13 +215,24 @@ app.get('/add-post', checkLoggedIn, (req, res) => {
 });
 
 app.post('/add-post', checkLoggedIn, (req, res) => {
-    const { text } = req.body;
+    const { text, topicId } = req.body;
     const userId = req.session.userId;
 
-    connection.query('INSERT INTO posts (user_id, text) VALUES (?, ?)', [userId, text], (error, results) => {
-        if (error) throw error;
-        res.redirect('/posts');
-    });
+    console.log('Received post request:', { userId, text, topicId });
+
+    connection.query(
+        'INSERT INTO posts (user_id, text, topic_id) VALUES (?, ?, ?)',
+        [userId, text, topicId],
+        (error, results) => {
+            if (error) {
+                console.error('Error inserting post:', error);
+                throw error;
+            }
+            console.log('Post inserted successfully:', results);
+
+            res.redirect('/posts');
+        }
+    );
 });
 
 app.listen(port, () => {

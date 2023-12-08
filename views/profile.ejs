@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            background-color: #000000;
+            padding: 10px;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 15px;
+        }
+
+        div {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
+            margin-top: 70px; /* Adjusted margin to account for the fixed navigation bar */
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        p {
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="/">Home</a>
+        <a href="/about">About</a>
+        <a href="/add-post">Add Post</a>
+        <a href="/profile">Profile</a>
+        <a href="/login">Login</a>
+        <a href="/register">Register</a>
+        <a href="/posts">Posts</a>
+    </nav>
+
+    <div>
+        <h1><%= user.username %>!</h1>
+        <p>Welcome, <%= user.username %>!</p>
+        <p>User ID: <%= user.userId %></p>
+        <!-- Add more user-related information as needed -->
+        <a href="/logout">Logout</a>
+    </div>
+</body>
+</html>

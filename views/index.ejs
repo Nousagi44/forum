@@ -1,57 +1,93 @@
-<!-- views/index.ejs -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Forum</title>
+    <title>Wendys Forum</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f4f4f4;
             margin: 0;
             padding: 0;
         }
 
         header {
-            background-color: #333;
-            padding: 10px;
+            background-color: #000000;
+            padding: 20px;
             text-align: center;
-        }
-
-        h1 {
             color: #fff;
         }
 
         nav {
             display: flex;
             justify-content: center;
-            background-color: #444;
+            background-color: #000000;
             padding: 10px;
         }
 
         nav a {
             color: #fff;
             text-decoration: none;
-            margin: 0 15px;
+            margin: 0 20px;
+            font-size: 16px;
+        }
+
+        nav a:hover {
+            border-bottom: 2px solid #fff;
+        }
+
+        main {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: #ff0000;
+        }
+
+        p {
+            color: #555;
+        }
+
+        .welcome-message {
+            font-size: 18px;
+            text-align: center;
+            margin-top: 50px;
+            color: #555;
         }
     </style>
 </head>
 <body>
     <header>
-        <h1>Welcome to the Forum!</h1>
+        <h1>Wendys Forum</h1>
     </header>
 
     <nav>
         <a href="/">Home</a>
         <a href="/about">About</a>
         <a href="/add-post">Add Post</a>
+        <a href="/profile">Profile</a>
         <a href="/login">Login</a>
         <a href="/register">Register</a>
         <a href="/posts">Posts</a>
     </nav>
 
-    <!-- Display forum data as needed -->
+    <main>
+        <% if (typeof userPost !== 'undefined' && userPost && userPost.topic_title) { %>
+            <div>
+                <h2>Your Most Recent Post:</h2>
+                <p>Topic: <%= userPost.topic_title %></p>
+                <p>Text: <%= userPost.text %></p>
+                <p>Created At: <%= userPost.created_at %></p>
+            </div>
+        <% } else { %>
+            <p class="welcome-message">Welcome to the forum! Start by adding a post.</p>
+        <% } %>
+    </main>
 </body>
 </html>

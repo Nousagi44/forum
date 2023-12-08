@@ -1,5 +1,3 @@
-<!-- views/posts.ejs -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -27,6 +25,7 @@
         ul {
             list-style-type: none;
             padding: 0;
+            margin: 0;
         }
 
         li {
@@ -37,8 +36,18 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
+        .post-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
         p {
-            margin: 20px 0;
+            margin: 10px 0;
+        }
+
+        .post-text {
+            white-space: pre-line; /* Preserve line breaks in the post text */
         }
     </style>
 </head>
@@ -48,13 +57,32 @@
     </header>
 
     <% if (posts.length > 0) { %>
+        <button onclick="clearPosts()">Clear All Posts</button>
         <ul>
             <% posts.forEach(post => { %>
-                <li><%= post.text %> by <%= post.username %></li>
+                <li>
+                    <div class="post-info">
+                        <p><strong><%= post.topic_title %></strong></p>
+                        <p>By <%= post.username %></p>
+                    </div>
+                    <p class="post-text"><%= post.text %></p>
+                </li>
             <% }); %>
         </ul>
     <% } else { %>
         <p>No posts available.</p>
     <% } %>
+
+    <script>
+        function clearPosts() {
+            fetch('/clear-posts', { method: 'POST' })
+                .then(response => {
+                    if (response.redirected) {
+                        window.location.href = response.url;
+                    }
+                })
+                .catch(error => console.error('Error clearing posts:', error));
+        }
+    </script>
 </body>
 </html>

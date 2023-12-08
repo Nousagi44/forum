@@ -1,20 +1,83 @@
-<!-- views/about.ejs -->
-
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About</title>
-    <!-- Add link to your stylesheet -->
-</head>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Wendys Forum</title>
+        <style>
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                background-color: #f4f4f4;
+                margin: 0;
+                padding: 0;
+            }
+    
+            header {
+                background-color: #000000;
+                padding: 20px;
+                text-align: center;
+                color: #fff;
+            }
+    
+            nav {
+                display: flex;
+                justify-content: center;
+                background-color: #000000;
+                padding: 10px;
+            }
+    
+            nav a {
+                color: #fff;
+                text-decoration: none;
+                margin: 0 20px;
+                font-size: 16px;
+            }
+    
+            nav a:hover {
+                border-bottom: 2px solid #fff;
+            }
+    
+            main {
+                max-width: 800px;
+                margin: 20px auto;
+                padding: 20px;
+                background-color: #fff;
+                border-radius: 8px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            }
+    
+            h2 {
+                color: #ff0000;
+            }
+    
+            p {
+                color: #555;
+            }
+    
+            .welcome-message {
+                font-size: 18px;
+                text-align: center;
+                margin-top: 50px;
+                color: #555;
+            }
+        </style>
+    </head>
+    <body>
+        <header>
+            <h1>Wendys Forum</h1>
+        </header>
+    
+        <nav>
+            <a href="/">Home</a>
+            <a href="/about">About</a>
+            <a href="/add-post">Add Post</a>
+            <a href="/profile">Profile</a>
+            <a href="/login">Login</a>
+            <a href="/register">Register</a>
+            <a href="/posts">Posts</a>
+        </nav>
 <body>
     <h1>About Our Forum</h1>
-
-    <p>Welcome to our community forum! We are dedicated to providing a platform for discussions, sharing knowledge, and connecting with like-minded individuals.</p>
-
-    <h2>Our Mission</h2>
-    <p>At our forum, we aim to create a welcoming and inclusive space for discussions on a wide range of topics. Whether you're here to seek help, share your expertise, or engage in friendly conversations, we're thrilled to have you as part of our community.</p>
 
     <h2>Get Involved</h2>
     <p>Joining our forum is easy! Simply register an account, and you'll gain access to a variety of topics and discussions. Don't hesitate to start a new thread, respond to existing posts, or ask questions. Your participation makes our community vibrant and diverse.</p>
